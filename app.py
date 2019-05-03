@@ -3,6 +3,10 @@ from werkzeug.utils import secure_filename
 import os
 import argparse
 from utils.classifier import ImageClassifier
+import tensorflow as tf
+
+tf.enable_eager_execution()
+
 classifier = ImageClassifier()
 
 app = Flask(__name__)
@@ -23,10 +27,8 @@ def index():
 def classify():
     file_form = request.files['image-input']
     if file_form and valida_file(file_form.filename):
-        print(help(file_form), help(file_form.stream))
         print(classifier.classify(file_form))
-        file_form.save('./image.jpg')
-        return ''
+    return ''
 
 def main():
     args = parser.parse_args()
