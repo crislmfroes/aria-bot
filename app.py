@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 from werkzeug.utils import secure_filename
 import os
 import argparse
@@ -11,10 +11,12 @@ classifier = ImageClassifier()
 
 app = Flask(__name__)
 
+app.config['UPLOAD_FOLDER'] = './uploads/'
+
 parser = argparse.ArgumentParser()
 parser.add_argument('development', type=bool, nargs='?', const=False)
 
-extensions = ['jpg', 'png']
+extensions = ['jpg', 'png', 'jpeg']
 
 def valida_file(file_name):
     return '.' in file_name and file_name.split('.')[1].lower() in extensions
@@ -27,7 +29,8 @@ def index():
 def classify():
     file_form = request.files['image-input']
     if file_form and valida_file(file_form.filename):
-        print(classifier.classify(file_form))
+        classifications = classifier.classify(file_form)
+        return render_template('class_results.html', scores=classifications)
     return ''
 
 def main():
